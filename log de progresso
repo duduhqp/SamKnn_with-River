@@ -8,3 +8,4 @@ Próximos passos:
 17/09/2022: verifiquei que tenho de reiniciar a stream para a realização de testes em sequência.
 
  - Novo problema:acessando index fora do alcance ao chamar random_instance = (self.stm-samples[index]) no método get_last_random
+ (não é causado quando se roda um a um somente quando são gerados em sequência)
