@@ -1,0 +1,10 @@
+03/09/2022: terminada a implementação do FGTSAMKNN e do FGTProgressive_val_score
+Próximos passos:
+    - adaptar o método get_last_random para receber n_samples não inteiro (ex: 0.1, 0.25)
+    - terminar a adaptação da classe generate_results para as novas classes (Atenção às difs entre os evaluators)
+
+10/09/2022: Adaptado o método get_last_random para receber n_samples não inteiro
+
+17/09/2022: verifiquei que tenho de reiniciar a stream para a realização de testes em sequência.
+
+ - Novo problema:acessando index fora do alcance ao chamar random_instance = (self.stm-samples[index]) no método get_last_random
