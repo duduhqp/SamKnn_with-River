@@ -45,8 +45,9 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
         #window_length = self.window.n_samples
         window_length = self._stm_labels.size
         print("Window_length ="+ str(window_length))
-        print("STM_samples = ", self._stm_samples)
-        print("STM_labels = ", self._stm_labels)
+        # print("STM_samples = ", self._stm_samples)
+        # print("STM_labels = ", self._stm_labels)
+        print(str(sub_set_length))
         last_random_instances = []
         last_samples_starting_position = window_length - sub_set_length
         print("last_samples_starting_position ="+str(last_samples_starting_position))

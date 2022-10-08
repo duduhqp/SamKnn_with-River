@@ -244,8 +244,9 @@ def _progressive_validation(
         n_total_answers += 1
 
         if n_total_answers % fgt_freq == 0:
-            # print("n_total_answers = "+str(n_total_answers))
+            print("n_total_answers = "+str(n_total_answers))
             # print("Tamanho Janela ="+str(model._stm_samples.size))
+            print("tamanho janela labels="+str(model._stm_labels.size))
             if model.fgt:
                 model.forget_last_random()
 

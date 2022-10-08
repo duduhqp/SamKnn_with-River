@@ -23,7 +23,7 @@ initializing streams by passing csv datasets to stream constructor,with specific
 """
 converters_interchanging = {'1': float, '2': float,'3':int}
 target_interchanging = '3'
-stream_interchanging = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/interchanging-rbf/interchanging.csv", converters=converters_interchanging, target= target_interchanging)
+# stream_interchanging = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/interchanging-rbf/interchanging.csv", converters=converters_interchanging, target= target_interchanging)
 
 converters_chessboard = {'1': float, '2': float,'3':int}
 target_chessboard = '3'
@@ -31,11 +31,11 @@ target_chessboard = '3'
 
 converters_squares = {'feat_1': float, 'feat_2': float,'target':int}
 target_squares = 'target'
-stream_squares = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/moving_squares/squares.csv", converters=converters_squares, target= target_squares)
+# stream_squares = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/moving_squares/squares.csv", converters=converters_squares, target= target_squares)
 
 converters_poker = {'1':int, '2':int, '3':int, '4':int, '5':int, '6':int, '7':int, '8':int, '9':int, '10':int, '11':int}
 target_poker = '11'
-stream_poker = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/poker/poker.csv", converters=converters_poker, target= target_poker)
+# stream_poker = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/poker/poker.csv", converters=converters_poker, target= target_poker)
 
 
 
@@ -46,7 +46,7 @@ def generate_samknn_models(k, wind_size):
     samknn_models = [FGTSAMKNN(n_neighbors=k, max_window_size=wind_size, fgt=False)]
     # loop to add samknn's that will have data forgotten
     for i in range(4):
-        samknn_models.append(FGTSAMKNN(n_neighbors=k, max_window_size=wind_size, fgt_n_instances=n_samples_fgt[i]))
+        samknn_models.append(FGTSAMKNN(n_neighbors=k,max_window_size=wind_size, fgt_n_instances=n_samples_fgt[i]))
     return samknn_models
 
 
@@ -82,33 +82,6 @@ def evaluated(dataset_name,converters, target, metrics, starting_k_value=3):
             # f2.close()
             print('fechei arquivo')
 
-        # Adaptação do Evaluator do Sci-kit MultiFlow (evaluatePrequential)
-        # evaluator = FGTEvaluatePrequential(max_samples=2000000,
-        #                                    show_plot=False,
-        #
-        #                                    # Não é aplicável pro método progressive_val_score
-        #                                    pretrain_size=samknn_list[i][0].n_neighbors, #!! POSSÍVEL ERRO
-        #
-        #                                    n_wait=100,
-        #                                    metrics=['accuracy'],
-        #                                    output_file='fgt-sam-knn-tests/1000-recent/' + dataset_name + '/' + file_name + '.csv',
-        #                                    fgt_freq=1000)
-        #
-        # evaluator.evaluate(stream=stream, model=samknn_list[i],
-        #                    image_name='fgt-sam-knn-tests/' + dataset_name + '/' + file_name,
-        #                    model_names=['0', '0.1', '0.25', '0.5', '0.75'])
-
-        # Adaptação do Evaluator do River (progressive_val-score)
-        #Diferenças estruturais entre os evaluators:
-        #   - multiflow seta o evaluator primeiro e depois chama o método evaluate, river seta e chama o método ao mesmo tempo
-        #   - multiflow pode receber uma lista de modelos, river só recebe um !!NECESSÁRIO ADAPTAÇÃO
-        #   - multiflow pode receber uma lista de métricas, river só recebe uma !!NECESSÁRIO ADAPTAÇÃO
-        #
-        # evaluator = FGTProgressive_val_score(dataset=,
-        #                                      model=,
-        #                                      metric=,
-        #                                      )
-
 
 from river import metrics
 
@@ -117,7 +90,7 @@ metric = metrics.Accuracy()
 """
 generate results for each dataset
 """
-# evaluate('interchanging', stream_interchanging, metric)
-# evaluate('squares', stream_squares, metric)
-evaluated("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metric)
-# evaluate('poker', stream_poker, metric)
+# evaluate('datasets/1000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging, metric)
+# evaluate('datasets/1000-recent/moving_squares/squares.csv', converters_squares, target_squares, metric)
+evaluated("datasets/1000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metric)
+# evaluate('datasets/1000-recent/poker/poker.csv', converters_poker, target_poker, metric)
