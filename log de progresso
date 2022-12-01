@@ -9,3 +9,11 @@ Próximos passos:
 
  - Novo problema:acessando index fora do alcance ao chamar random_instance = (self.stm-samples[index]) no método get_last_random
  (não é causado quando se roda um a um somente quando são gerados em sequência)
+
+08/10/2022: verifiquei que o adaptador da janela da STM, quando True, estava diminuindo o tamanho da janela. Fiz testes com o adaptador nulo e salvei os resultados (todos com final NoAdaptation), porém não é o ideal.
+
+    - Outra possível solução seria garantir que o fgt_sub_set_length seja sempre menor ou igual ao min_stm_size garantindo assim que o modelo está adaptando sua STM buscando melhor resultado
+e que nunca acessaremos instâncias fora do alcance da STM pois a janela nunca será menor que o min_stm_size.
+
+    - Outras opções:
+        1)procurar maneiras de verificar se o index que estou tentando deletar está dentro do alcance da janela, por debaixo dos panos

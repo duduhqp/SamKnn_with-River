@@ -10,7 +10,7 @@ from river import neighbors
 class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
     def __init__(self,
                  fgt=True,
-                 fgt_n_instances=100,
+                 fgt_n_instances=0,
                  fgt_from_sub_set_length=500,
                  n_neighbors=5,
                  weighting='distance',
@@ -28,7 +28,13 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
                          use_ltm=use_ltm)
 
         self.fgt = fgt
-        self.fgt_n_instances = fgt_n_instances
+        if fgt_n_instances < 1 :
+            fgt_n_instances = int(fgt_n_instances * fgt_from_sub_set_length)
+        if fgt_from_sub_set_length < min_stm_size:
+            print("O número de instâncias a serem esquecidas (fgt_n_instances) não pode ser  inferior ao tamanho mínimo da STM (min_stm_size)")
+            print(fgt_n_instances)
+        else :
+            self.fgt_n_instances = fgt_n_instances
         self.fgt_from_sub_set_length = fgt_from_sub_set_length
 
     def delete_element_at_index(self, i):
@@ -42,19 +48,19 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
 
     def get_last_random(self, n_samples, sub_set_length):
         """ get 'n_samples' randomly from the newest 'sub_set_length' elements """
-        #window_length = self.window.n_samples
         window_length = self._stm_labels.size
         print("Window_length ="+ str(window_length))
-        # print("STM_samples = ", self._stm_samples)
-        # print("STM_labels = ", self._stm_labels)
-        print(str(sub_set_length))
         last_random_instances = []
         last_samples_starting_position = window_length - sub_set_length
-        print("last_samples_starting_position ="+str(last_samples_starting_position))
-        last_samples_range = range(last_samples_starting_position, window_length) # equivalente a sub_set_length
-        # !!!! POSSÍVEL PROBLEMA : se eu passar um valor não inteiro ao n_samples não funciona o random.samples!!!!!!
-        # Será necessário avaliação prévia. Se n_samples menor que 1, ou seja, uma porcentagem devo aplicar essa porcentagem ao sub_set_length.
-        # Objetivo: quero esquecer n_samples 0.1 do sub_set_length 1000 === quero esquecer 10% a cada 1000 elementos
+        if (last_samples_starting_position < 0):
+            last_samples_starting_position = 0
+        print("last_samples_starting_position =" + str(last_samples_starting_position))
+        last_samples_range = range(last_samples_starting_position, window_length)
+        print("last_samples_range before if =" + str(last_samples_range))
+        print("n_samples before if = " + str(n_samples))
+        if n_samples >  max(last_samples_range) :
+            n_samples = max(last_samples_range)
+            print("max function activated = "+str(n_samples))
         random_indexes = (random.sample(last_samples_range, n_samples))
         for i in range(n_samples):
             index = random_indexes[i]

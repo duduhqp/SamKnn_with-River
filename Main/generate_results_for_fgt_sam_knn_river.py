@@ -40,7 +40,7 @@ target_poker = '11'
 
 
 def generate_samknn_models(k, wind_size):
-    # list with number of samples to be forgotten
+    # list with percentage of samples to be forgotten
     n_samples_fgt = [0.1, 0.25, 0.50, 0.75]
     # initialize list of SAMKNN with model which won't have data forgotten - 25% not forget
     samknn_models = [FGTSAMKNN(n_neighbors=k, max_window_size=wind_size, fgt=False)]
@@ -54,43 +54,66 @@ def generate_different_k_values_sam_knn_models(starting_k_value):
     # list that will contain lists with samknn models, each with its own 'k' values
     samknn_models_nested = []
     # loop to append to samknn_models_nested samknn models with k = [3, 5]
-    for j in range(starting_k_value, 4, 2):
-        # print('k='+str(j))
+    for j in range(starting_k_value, 6, 2):
+        print("k"+str(j))
         samknn_models_nested.append(generate_samknn_models(j, 5000))
     #No final terá 10 modelos, cinco deles com k=3 e taxa de esquecimento de [0%, 10%, 25%, 50%, 75%] e cinco deles com k=5 e taxa de esquecimento de [0%, 10%, 25%, 50%, 75%]
     return samknn_models_nested
 
 
-def evaluated(dataset_name,converters, target, metrics, starting_k_value=3):
+def evaluated(dataset_name,converters, target, metricas, nomes_metricas, starting_k_value=3, fgt_freq=1000):
     samknn_list = generate_different_k_values_sam_knn_models(starting_k_value)
 
     for i in samknn_list:
-        # file_name = 'fgt-sam-knn-tests/1000-recent/' + dataset_name + '/results_k=' + str(samknn_list[i][0].n_neighbors) + '_ws=' + str(samknn_list[i][0].window_size) + '.log'
         for j in i:
-            streamed = stream.iter_csv(dataset_name, converters=converters, target=target)
-            file_name = 'results_k='+ str(j.n_neighbors) + '_ws=' + str(j.window_size) + '_fgt=' + str(j.fgt_n_instances) + '.log'
-            f = open(file_name, 'w')
-            # f2 = open(file_name+'x','w')
-            print('abri arquivo '+ file_name)
-            FGTProgressive_val_score.progressive_val_score(dataset=streamed,
-                                                       model=j,
-                                                       metric=metrics,
-                                                       print_every=200,
-                                                       file=f)
-            # evaluate.progressive_val_score(dataset=stream, model=samknn_list[i][j], metric=metrics, print_every=200, file =f2)
-            f.close()
-            # f2.close()
-            print('fechei arquivo')
+            for p in range(len(metricas)):
+                # Tanto a stream do dataset quanto a métrica são objetos pela biblioteca River então tenho de reinstânciá-los ou ter um array com vários objetos
+                streamed = stream.iter_csv(dataset_name, converters=converters, target=target)
+                metrica = metricas[p].clone()
+                file_directory = dataset_name.split("/")
+                file_name = 'results/'+file_directory[1]+'/'+file_directory[2]+'/'+'results_k='+ str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.csv'
+                f = open(file_name, 'w')
+                print('abri arquivo '+ file_name)
+                FGTProgressive_val_score.progressive_val_score(dataset=streamed,
+                                                           model=j,
+                                                           fgt_freq=fgt_freq,
+                                                           metric=metrica,
+                                                           print_every=200,
+                                                           file=f)
+                f.close()
+                print('fechei arquivo')
 
 
+
+# DEFINIR A MÉTRICA
 from river import metrics
 
-metric = metrics.Accuracy()
+# metric = metrics.Accuracy()
+# metric = metrics.BalancedAccuracy()
+# metric = metrics.F1()
+metricas=[metrics.Accuracy(), metrics.BalancedAccuracy()]
+nome_metricas=['_acuracia', '_acuracia_balanceada']
+valor_ini_k = 3
+
+
+
 
 """
-generate results for each dataset
+generate results for each dataset (1000-recent)
 """
-# evaluate('datasets/1000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging, metric)
-# evaluate('datasets/1000-recent/moving_squares/squares.csv', converters_squares, target_squares, metric)
-evaluated("datasets/1000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metric)
-# evaluate('datasets/1000-recent/poker/poker.csv', converters_poker, target_poker, metric)
+freq_esquecimento = 1000
+
+# evaluated('datasets/1000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging, metricas, nome_metricas,, valor_ini_k, freq_esquecimento)
+# evaluated('datasets/1000-recent/moving_squares/squares.csv', converters_squares, target_squares,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+# evaluated("datasets/1000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+# evaluated('datasets/1000-recent/poker/poker.csv', converters_poker, target_poker,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+
+"""
+generate results for each dataset (5000-recent)
+"""
+freq_esquecimento = 5000
+
+# evaluated('datasets/5000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+# evaluated('datasets/5000-recent/moving_squares/squares.csv', converters_squares, target_squares,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+# evaluated("datasets/5000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metricas, nome_metricas, valor_ini_k, freq_esquecimento)
+evaluated('datasets/5000-recent/poker/poker.csv', converters_poker, target_poker,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
