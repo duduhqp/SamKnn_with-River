@@ -271,26 +271,22 @@ files = ['results/1000-recent/chessboard/results_k=3_fgt=0_acuracia.csv',
 data_for_plot = []
 
 for file in files:
-    with open(file) as csv_file:
-        csv_reader = csv.reader(csv_file)
+    try:
+        reader = open(file, 'r')
         dicti = dict()
         dicti['n_answers'] = []
         dicti['metric'] = []
         dicti['percentage'] = []
-        for rows in csv_reader:
-            if len(rows)>1:
-                rows[0] = rows[0]+rows[1]
-                rows.pop(1)
-            for row in rows:
-                colunas = row.split()
-                for i in range(len(colunas)):
-                    if (i == 0):
-                        dicti['n_answers'].append(colunas[i].strip("[]:%"))
-                    elif (i == 1):
-                        dicti['metric'].append(colunas[i].strip("[]:%"))
-                    else:
-                        dicti['percentage'].append(colunas[i].strip("[]:%"))
+        Lines = reader.readlines()
+        for row in Lines:
+            colunas = row.split()
+            dicti['n_answers'].append(colunas[0].strip("[]").replace(',',''))
+            dicti['metric'].append(colunas[1].strip(":"))
+            dicti['percentage'].append(colunas[2].strip("%"))
         data_for_plot.append(dicti)
+    except OSError:
+        print ("Could not open/read file:", file)
+        exit()
 
 for data in data_for_plot:
     plt.plot(data['n_answers'], data['percentage'])
