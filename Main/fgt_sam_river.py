@@ -2,8 +2,6 @@ import random
 from abc import ABC
 
 import numpy as np
-#from lazy.sam_knn import SAMKNNClassifier
-
 from river import neighbors
 
 
@@ -39,12 +37,8 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
 
     def delete_element_at_index(self, i):
         """ Delete element at a given index i from the sample window """
-        #self._stm_samples._n_samples -= 1
-        #self._stm_samples._buffer = np.delete(self._stm_samples._buffer, i, 0)
         self._stm_samples = np.delete(self._stm_samples, i, 0)
         self._stm_labels = np.delete(self._stm_labels, i, 0)
-        ## Pode ser substituído pela função np.delete(self._STMLabels, i, 0), onde i é o índice
-        ## e 0 indica a dimensão (0 == linha e 1 == coluna)
 
     def get_last_random(self, n_samples, sub_set_length):
         """ get 'n_samples' randomly from the newest 'sub_set_length' elements """
