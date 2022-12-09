@@ -11,15 +11,6 @@ __all__ = ["progressive_val_score"]
 
 class FGTProgressive_val_score():
 
-    # Adaptação do Evaluator do River (progressive_val-score)
-    # Diferenças estruturais entre os evaluators:
-    #   - multiflow seta o evaluator primeiro e depois chama o método evaluate, river seta e chama o método ao mesmo tempo
-    #   - multiflow pode receber uma lista de modelos, river só recebe um !!NECESSÁRIO ADAPTAÇÃO
-    #   - multiflow pode receber uma lista de métricas, river só recebe uma !!NECESSÁRIO ADAPTAÇÃO
-
-    # !! VARIÁVEIS NOVAS NECESÁRIAS:
-    #   - frg_freq = frequência com que o avaliador chamará o método forget_last_random do modelo
-
     def progressive_val_score(
             dataset: base.typing.Dataset,
             model,
@@ -172,7 +163,6 @@ class FGTProgressive_val_score():
         [^2]: [Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30](https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf)
 
         """
-        print("Chamei método")
         checkpoints = _progressive_validation(
             dataset,
             model,
@@ -242,13 +232,8 @@ def _progressive_validation(
 
         # Update the answer counter
         n_total_answers += 1
-        # if n_total_answers == 328 : print("Aqui")
-        # print("n_total_answers = " + str(n_total_answers))
-        # print("tamanho janela labels=" + str(model._stm_labels.size))
+
         if n_total_answers % fgt_freq == 0 :
-            print("n_total_answers = "+str(n_total_answers))
-            # print("Tamanho Janela ="+str(model._stm_samples.size))
-            print("tamanho janela labels="+str(model._stm_labels.size))
             if model.fgt:
                 model.forget_last_random()
 

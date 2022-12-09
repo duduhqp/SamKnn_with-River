@@ -36,35 +36,29 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
         self.fgt_from_sub_set_length = fgt_from_sub_set_length
 
     def delete_element_at_index(self, i):
-        """ Delete element at a given index i from the sample window """
+        """ Deleta elemento num dado índice i da janela de amostras """
         self._stm_samples = np.delete(self._stm_samples, i, 0)
         self._stm_labels = np.delete(self._stm_labels, i, 0)
 
     def get_last_random(self, n_samples, sub_set_length):
-        """ get 'n_samples' randomly from the newest 'sub_set_length' elements """
+        """ Seleciona 'n_samples' aleatoriamente dos elementos dentro do 'sub_set_length' mais recente """
         window_length = self._stm_labels.size
-        print("Window_length ="+ str(window_length))
         last_random_instances = []
         last_samples_starting_position = window_length - sub_set_length
         if (last_samples_starting_position < 0):
             last_samples_starting_position = 0
-        print("last_samples_starting_position =" + str(last_samples_starting_position))
         last_samples_range = range(last_samples_starting_position, window_length)
-        print("last_samples_range before if =" + str(last_samples_range))
-        print("n_samples before if = " + str(n_samples))
         if n_samples >  max(last_samples_range) :
             n_samples = max(last_samples_range)
-            print("max function activated = "+str(n_samples))
         random_indexes = (random.sample(last_samples_range, n_samples))
         for i in range(n_samples):
             index = random_indexes[i]
-            #random_instance = (self.window.buffer[index])
             random_instance = (self._stm_samples[index])
             last_random_instances.append(random_instance)
         return last_random_instances
 
     def delete_by_instance(self, instances):
-        """ looks for 'instances' given in the window and deletes them """
+        """ Busca por 'instâncias' dadas dentro da janela e as deleta"""
         for i in range(len(instances)):
             for j in range(len(self._stm_samples) - 1, -1, -1):
                 if np.array_equal(instances[i], self._stm_samples[j]):
@@ -72,7 +66,7 @@ class FGTSAMKNN(neighbors.SAMKNNClassifier, ABC):
                     break
 
     def forget_last_random(self):
-        """ deletes newest random instances """
+        """ Deleta instâncias mais novas aleatoriamente"""
         if self.fgt_n_instances < 1 :
             n_samples = int(self.fgt_n_instances*self.fgt_from_sub_set_length)
             instances = self.get_last_random(n_samples, self.fgt_from_sub_set_length)

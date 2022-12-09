@@ -2,7 +2,6 @@ import os
 import sys
 
 from river import stream
-from river import evaluate
 from fgt_sam_river import FGTSAMKNN
 from fgt_progessive_val_score import FGTProgressive_val_score
 
@@ -19,43 +18,46 @@ For that purpose there are 5 forgetting values for each model: 0, 0.1, 0.25, 0.5
 """
 
 """
-initializing streams by passing csv datasets to stream constructor,with specific casting and target
+Esse é um programa python para gerar resultados para avaliação de 4 datasets com possibilidade de esquecimento.
+O objetivo é compara modelos com mesmo valor de k and tamanho máximo de janela que esquecem
+diferentes valores de dados a cada 1000/5000 valores vistos.
+Para esse propósito exitem 5 valores de esquecimento para cada modelo: 0, 0.1, 0.25, 0.5, 0.75.
+"""
+
+
+"""
+Inicializando streams a partir dos arquivos csv dos datasets, especificando tipagem dos dados e os alvos.
 """
 converters_interchanging = {'1': float, '2': float,'3':int}
 target_interchanging = '3'
-# stream_interchanging = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/interchanging-rbf/interchanging.csv", converters=converters_interchanging, target= target_interchanging)
 
 converters_chessboard = {'1': float, '2': float,'3':int}
 target_chessboard = '3'
-# stream_chessboard = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/chessboard/chessboard.csv", converters=converters_chessboard, target= target_chessboard)
 
 converters_squares = {'feat_1': float, 'feat_2': float,'target':int}
 target_squares = 'target'
-# stream_squares = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/moving_squares/squares.csv", converters=converters_squares, target= target_squares)
 
 converters_poker = {'1':int, '2':int, '3':int, '4':int, '5':int, '6':int, '7':int, '8':int, '9':int, '10':int, '11':int}
 target_poker = '11'
-# stream_poker = stream.iter_csv("C:/Users/Pichau/Documents/GitHub/research-project-stream-learning/lazy/fgt-sam-knn-tests/1000-recent/poker/poker.csv", converters=converters_poker, target= target_poker)
 
 
 
 def generate_samknn_models(k, wind_size):
-    # list with percentage of samples to be forgotten
+    # Lista com porcentagem dos dados a serem excluídos (esquecidos)
     n_samples_fgt = [0.1, 0.25, 0.50, 0.75]
-    # initialize list of SAMKNN with model which won't have data forgotten - 25% not forget
+    # Inicialização do modelo Upper Bound, que não haverá esqueicmento
     samknn_models = [FGTSAMKNN(n_neighbors=k, max_window_size=wind_size, fgt=False)]
-    # loop to add samknn's that will have data forgotten
+    # Loop inicializando modelos com as taxas de esquecimento diferentes
     for i in range(4):
         samknn_models.append(FGTSAMKNN(n_neighbors=k,max_window_size=wind_size, fgt_n_instances=n_samples_fgt[i]))
     return samknn_models
 
 
 def generate_different_k_values_sam_knn_models(starting_k_value):
-    # list that will contain lists with samknn models, each with its own 'k' values
+    # Lista que irá conter as listas com as diferentes instâncias do modelo FGT-SAM-KNN
     samknn_models_nested = []
-    # loop to append to samknn_models_nested samknn models with k = [3, 5]
+    # Loop para instânciar os modelos de FGT-SAM-KNN com diferentes valore de k, default k = [3, 5]
     for j in range(starting_k_value, 6, 2):
-        print("k"+str(j))
         samknn_models_nested.append(generate_samknn_models(j, 5000))
     #No final terá 10 modelos, cinco deles com k=3 e taxa de esquecimento de [0%, 10%, 25%, 50%, 75%] e cinco deles com k=5 e taxa de esquecimento de [0%, 10%, 25%, 50%, 75%]
     return samknn_models_nested
@@ -73,7 +75,6 @@ def evaluated(dataset_name,converters, target, metricas, nomes_metricas, startin
                 file_directory = dataset_name.split("/")
                 file_name = 'results/'+file_directory[1]+'/'+file_directory[2]+'/'+'results_k='+ str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.csv'
                 f = open(file_name, 'w')
-                print('abri arquivo '+ file_name)
                 FGTProgressive_val_score.progressive_val_score(dataset=streamed,
                                                            model=j,
                                                            fgt_freq=fgt_freq,
@@ -81,7 +82,6 @@ def evaluated(dataset_name,converters, target, metricas, nomes_metricas, startin
                                                            print_every=200,
                                                            file=f)
                 f.close()
-                print('fechei arquivo')
 
 
 
@@ -92,14 +92,15 @@ from river import metrics
 # metric = metrics.BalancedAccuracy()
 # metric = metrics.F1()
 metricas=[metrics.Accuracy(), metrics.BalancedAccuracy()]
+
+# Nomes das métricas para criação dos arquivos
 nome_metricas=['_acuracia', '_acuracia_balanceada']
+
+# Valor inicial de k
 valor_ini_k = 3
 
-
-
-
 """
-generate results for each dataset (1000-recent)
+Gerar resultados para cada dataset (1000-recent)
 """
 freq_esquecimento = 1000
 
@@ -109,7 +110,7 @@ freq_esquecimento = 1000
 # evaluated('datasets/1000-recent/poker/poker.csv', converters_poker, target_poker,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
 
 """
-generate results for each dataset (5000-recent)
+Gerar resultados para cada dataset (5000-recent)
 """
 freq_esquecimento = 5000
 

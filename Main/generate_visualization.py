@@ -347,7 +347,6 @@ for data in data_for_plot:
         plt.yticks(range(65,100,5))
     else:
         plt.yticks(range(0, 100, 10))
-        # plt.locator_params(axis='y', nbins=10)
     plt.locator_params(axis='x', nbins=10)
 
 
