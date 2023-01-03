@@ -73,14 +73,30 @@ def evaluated(dataset_name,converters, target, metricas, nomes_metricas, startin
                 streamed = stream.iter_csv(dataset_name, converters=converters, target=target)
                 metrica = metricas[p].clone()
                 file_directory = dataset_name.split("/")
-                file_name = 'results/'+file_directory[1]+'/'+file_directory[2]+'/'+'results_k='+ str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.csv'
+                # Gerando resultados para as métricas
+                # file_name = 'results/'+file_directory[1]+'/'+file_directory[2]+'/'+'results_k='+ str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.csv'
+                # f = open(file_name, 'w')
+                # print("Abriu arquivo:"+str(file_name))
+                # FGTProgressive_val_score.progressive_val_score(dataset=streamed,
+                #                                            model=j,
+                #                                            fgt_freq=fgt_freq,
+                #                                            metric=metrica,
+                #                                            print_every=200,
+                #                                            file=f)
+
+                # Avaliando tempo e memória
+                # file_name = 'time_and_memory_interchanging-rbf_results_k='+ str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.log'
+                file_name = 'time_and_memory/' + file_directory[1] + '/' + file_directory[2] + '/' + 'results_k=' + str(j.n_neighbors) + '_fgt=' + str(j.fgt_n_instances) + str(nomes_metricas[p]) + '.csv'
                 f = open(file_name, 'w')
+                print("Abriu arquivo:" + str(file_name))
                 FGTProgressive_val_score.progressive_val_score(dataset=streamed,
-                                                           model=j,
-                                                           fgt_freq=fgt_freq,
-                                                           metric=metrica,
-                                                           print_every=200,
-                                                           file=f)
+                                                               model=j,
+                                                               fgt_freq=fgt_freq,
+                                                               metric=metrica,
+                                                               print_every=20000,
+                                                               file=f,
+                                                               show_memory=True,
+                                                               show_time=True)
                 f.close()
 
 
@@ -104,7 +120,7 @@ Gerar resultados para cada dataset (1000-recent)
 """
 freq_esquecimento = 1000
 
-# evaluated('datasets/1000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging, metricas, nome_metricas,, valor_ini_k, freq_esquecimento)
+# evaluated('datasets/1000-recent/interchanging-rbf/interchanging.csv', converters_interchanging, target_interchanging, metricas, nome_metricas, valor_ini_k, freq_esquecimento)
 # evaluated('datasets/1000-recent/moving_squares/squares.csv', converters_squares, target_squares,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
 # evaluated("datasets/1000-recent/chessboard/chessboard.csv",converters_chessboard, target_chessboard, metricas, nome_metricas, valor_ini_k, freq_esquecimento)
 # evaluated('datasets/1000-recent/poker/poker.csv', converters_poker, target_poker,  metricas, nome_metricas, valor_ini_k, freq_esquecimento)
